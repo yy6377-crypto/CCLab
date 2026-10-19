@@ -1,10 +1,3 @@
-/*
-Template for IMA's Creative Coding Lab 
-
-Project A: Generative Creatures
-CCLaboratories Biodiversity Atlas 
-*/
-
 let off1, off2, off3, off4;
 let cx = 0;
 let cy = 0;
@@ -28,7 +21,11 @@ let gameoverTime = 0;
 const RESET_DELAY = 1000;
 
 let dots = [];
-const gridStep = 30; 
+const gridStep = 30;
+
+let maxR = 180;
+let targetR = 180;
+
 
 function setup() {
   createCanvas(800, 500);
@@ -46,11 +43,13 @@ function setup() {
   }
 
   for(let i = 0; i < jellyCount; i++){
+    let angle = random(TWO_PI);
+    let r = sqrt(random(1)) * maxR;
     jelly.push({
       x: random(width),
       y: random(height),
-      offsetX: random(-150,150),
-      offsetY: random(-150,150),
+      offsetX: cos(angle) * r,
+      offsetY: sin(angle) * r,
       lerpSpeed: random(0.01,0.08),
       sizeScale: random(0.2,1.2),
       phase: random(20),
@@ -114,7 +113,7 @@ function draw() {
 
 
 
-    fill(200,45,58,230);
+    fill(200,75,60,230);
     noStroke();
 
     for(let d of dots){
@@ -127,7 +126,7 @@ function draw() {
         d.targetY = d.originY + random(-30,30);
     }
 
-      circle(d.currX, d.currY, 1.6);
+      circle(d.currX, d.currY, 2);
   }
   }
 
@@ -136,31 +135,32 @@ function draw() {
   
   //4 circles
     if(!gameover){
-      noFill();
-    
       for(let i = 0; i < circles.length; i++){
         let c = circles[i];
-        if(c.clicked){
-          stroke(200,45,75,70);
+        let d = dist(mouseX,mouseY, c.x, c.y);
+        let jx = 0, jy = 0;
+        if(!c.clicked && d < 100){
+          fill(60, 60, 90);
+          jx = random(-3, 3);
+          jy = random(-3, 3);
+        }else if(c.clicked){
+          fill(200, 80, 70);
         }else{
-          stroke(0,0,100,60);
+          fill(230, 77, 65);
         }
+        noStroke();
+        circle(c.x + jx, c.y + jy, c.r);
 
-        strokeWeight(2);
-        circle(c.x, c.y, c.r);
-
-      // 内侧简单装饰线
-        if(c.clicked){
-          stroke(205,40,76,80);
+        if(!c.clicked){
+          stroke(230, 90, 45);
         }else{
-          stroke(0,0,100,65);
-       }
+          stroke(200, 40, 80);
+          circle(c.x + jx, c.y + jy, c.r * 0.6);
+      }
+       
+      }
 
-        strokeWeight(1);
-        circle(c.x, c.y, c.r*0.7);
 
-
-  }
     
 
     
@@ -188,6 +188,11 @@ function draw() {
     drawJellyfish(j.x, j.y, j.sizeScale, j.phase);
   }
 
+  if(jelly.length >= 200){
+    maxR += 30;
+  }else{
+    maxR = 180;
+  }
 
 
 }
